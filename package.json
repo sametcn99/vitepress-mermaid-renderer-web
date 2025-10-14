@@ -28,7 +28,8 @@
 		"docs:preview": "vitepress preview",
 		"docs:serve": "vitepress serve",
 		"lint": "eslint . --ext .js,.ts,.vue",
-		"format": "prettier --write \"**/*.{js,ts,vue,md}\""
+		"format": "prettier --write \"**/*.{js,ts,vue,md}\"",
+		"start": "vitepress build && vitepress serve --port 80 --host 0.0.0.0"
 	},
 	"devDependencies": {
 		"vitepress": "^1.6.4"
