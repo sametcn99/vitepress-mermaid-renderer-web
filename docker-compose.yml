@@ -1,0 +1,21 @@
+version: "3.8"
+services:
+  dev:
+    image: node:20
+    working_dir: /workspace
+    volumes:
+      - ./:/workspace:cached
+      - /workspace/node_modules
+    command: sh -c "npm ci && npm run docs:dev -- --host 0.0.0.0"
+    ports:
+      - "5173:5173"
+    environment:
+      - NODE_ENV=development
+
+  web:
+    build: .
+    ports:
+      - "8080:80"
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
