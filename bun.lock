@@ -4,9 +4,9 @@
     "": {
       "name": "vitepress-mermaid-renderer-test",
       "dependencies": {
-        "mermaid": "latest",
-        "vitepress": "latest",
-        "vitepress-mermaid-renderer": "latest",
+        "mermaid": "^11.12.1",
+        "vitepress": "^1.6.4",
+        "vitepress-mermaid-renderer": "^1.0.16",
       },
     },
   },

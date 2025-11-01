@@ -44,7 +44,7 @@ export default {
     const router = useRouter();
 
     const initMermaid = () => {
-      mermaidRenderer = createMermaidRenderer({
+      const mermaidRenderer = createMermaidRenderer({
         theme: isDark.value ? "dark" : "forest",
       // Example configuration options
       // startOnLoad: false,
