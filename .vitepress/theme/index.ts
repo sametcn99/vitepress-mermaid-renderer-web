@@ -37,11 +37,6 @@ export default {
         scheduleRender();
       },
     );
-	
-    router.onAfterRouteChange = () => {
-      scheduleRender();
-    };
-
     return h(DefaultTheme.Layout);
   },
 } satisfies Theme;
