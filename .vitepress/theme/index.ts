@@ -1,41 +1,43 @@
-import { h, nextTick, onMounted, watch } from "vue";
+import { h, nextTick, watch } from "vue";
 import type { Theme } from "vitepress";
 import DefaultTheme from "vitepress/theme";
 import "./style.css";
 import { createMermaidRenderer } from "vitepress-mermaid-renderer";
 import "vitepress-mermaid-renderer/dist/style.css";
-import { useData } from "vitepress";
+import { useData, useRouter } from "vitepress";
 
 export default {
 	extends: DefaultTheme,
 	Layout: () => {
 		const { isDark } = useData();
-		const mermaidRenderer = createMermaidRenderer({
-			theme: isDark.value ? "dark" : "forest",
-		});
+		const router = useRouter();
 
-		const scheduleRender = () => {
-			mermaidRenderer.setConfig({
+		let mermaidRenderer: ReturnType<typeof createMermaidRenderer> | null = null;
+
+		const initMermaid = () => {
+			mermaidRenderer = createMermaidRenderer({
 				theme: isDark.value ? "dark" : "forest",
 			});
-			nextTick(() => {
-				mermaidRenderer.renderMermaidDiagrams();
-			});
+			mermaidRenderer.initialize();
+			nextTick(() => mermaidRenderer!.renderMermaidDiagrams());
 		};
 
-		// Delay initialization until after hydration completes
-		onMounted(() => {
-			mermaidRenderer.initialize();
-			requestAnimationFrame(scheduleRender);
-		});
+		// Initial render
+		nextTick(() => initMermaid());
 
 		// on theme change, re-render mermaid charts
 		watch(
 			() => isDark.value,
 			() => {
-				scheduleRender();
+				initMermaid();
 			}
 		);
+
+		// site change - re render
+		router.onAfterRouteChange = () => {
+			nextTick(() => mermaidRenderer?.renderMermaidDiagrams());
+		};
+
 		return h(DefaultTheme.Layout);
 	},
 } satisfies Theme;
