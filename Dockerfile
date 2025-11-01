@@ -13,6 +13,6 @@ RUN bun install
 COPY . .
 RUN bun run docs:build
 
-EXPOSE 3000
-# Bind VitePress preview server to all interfaces so it is reachable outside the container
-CMD ["bun", "run", "docs:preview", "--", "--host", "0.0.0.0", "--port", "3000"]
+EXPOSE 80
+# Bind VitePress preview server to all interfaces and default HTTP port for Coolify proxy
+CMD ["bun", "run", "docs:preview", "--", "--host", "0.0.0.0", "--port", "80"]
