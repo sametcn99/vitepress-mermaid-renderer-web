@@ -2,6 +2,9 @@
 FROM oven/bun:alpine AS builder
 WORKDIR /app
 
+# VitePress needs git for lastUpdated timestamps during build
+RUN apk add --no-cache git
+
 # Install build dependencies via Bun (use lockfile when available)
 COPY package.json bun.lock* ./
 RUN bun install --frozen-lockfile || bun install
