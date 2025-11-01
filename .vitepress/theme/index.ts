@@ -12,14 +12,12 @@ export default {
 		const { isDark } = useData();
 		const router = useRouter();
 
-		let mermaidRenderer: ReturnType<typeof createMermaidRenderer> | null = null;
-
 		const initMermaid = () => {
-			mermaidRenderer = createMermaidRenderer({
-				theme: isDark.value ? "dark" : "forest",
-			});
-			mermaidRenderer.initialize();
-			nextTick(() => mermaidRenderer!.renderMermaidDiagrams());
+			nextTick(() =>
+				createMermaidRenderer({
+					theme: isDark.value ? "dark" : "forest",
+				}).initialize()
+			);
 		};
 
 		// Initial render
@@ -35,7 +33,7 @@ export default {
 
 		// site change - re render
 		router.onAfterRouteChange = () => {
-			nextTick(() => mermaidRenderer?.renderMermaidDiagrams());
+			nextTick(() => initMermaid());
 		};
 
 		return h(DefaultTheme.Layout);
