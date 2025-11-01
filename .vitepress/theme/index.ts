@@ -4,13 +4,12 @@ import DefaultTheme from "vitepress/theme";
 import "./style.css";
 import { createMermaidRenderer } from "vitepress-mermaid-renderer";
 import "vitepress-mermaid-renderer/dist/style.css";
-import { useData, useRouter } from "vitepress";
+import { useData } from "vitepress";
 
 export default {
 	extends: DefaultTheme,
 	Layout: () => {
 		const { isDark } = useData();
-		const router = useRouter();
 
 		const initMermaid = () => {
 			nextTick(() =>
@@ -30,11 +29,6 @@ export default {
 				initMermaid();
 			}
 		);
-
-		// site change - re render
-		router.onAfterRouteChange = () => {
-			nextTick(() => initMermaid());
-		};
 
 		return h(DefaultTheme.Layout);
 	},
