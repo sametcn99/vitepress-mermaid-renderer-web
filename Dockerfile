@@ -1,4 +1,3 @@
-# Dockerfile for building and previewing the VitePress static site
 FROM oven/bun:alpine
 WORKDIR /app
 
@@ -14,5 +13,6 @@ COPY . .
 RUN bun run docs:build
 
 EXPOSE 80
+
 # Bind VitePress preview server to all interfaces and default HTTP port for Coolify proxy
 CMD ["bun", "run", "docs:preview", "--", "--host", "0.0.0.0", "--port", "80"]

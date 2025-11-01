@@ -29,49 +29,40 @@ bun add vitepress-mermaid-renderer
 1. Your `.vitepress/config.ts` file is need to look like this:
 
 ```typescript
-import { h, nextTick, watchEffect, watch } from "vue";
+import { h, nextTick, watch } from "vue";
 import type { Theme } from "vitepress";
+import { useData } from "vitepress";
 import DefaultTheme from "vitepress/theme";
-import "./style.css";
 import { createMermaidRenderer } from "vitepress-mermaid-renderer";
 import "vitepress-mermaid-renderer/dist/style.css";
-import { useData, useRouter } from "vitepress";
+import "./style.css";
 
 export default {
-  extends: DefaultTheme,
-  Layout: () => {
-    const { isDark } = useData();
-    const router = useRouter();
+ extends: DefaultTheme,
+ Layout: () => {
+  const { isDark } = useData();
 
-    const mermaidRenderer = createMermaidRenderer({
-      theme: isDark.value ? "dark" : "forest",
-    // Example configuration options
-    // startOnLoad: false,
-    // flowchart: { useMaxWidth: true }
-    });
-    const initMermaid = () => {
-      mermaidRenderer.initialize();
-      nextTick(() => mermaidRenderer!.renderMermaidDiagrams());
-    };
+  const initMermaid = () => {
+   nextTick(() =>
+    createMermaidRenderer({
+     theme: isDark.value ? "dark" : "forest",
+    }).initialize()
+   );
+  };
 
-    // Initial render
-    nextTick(() => initMermaid());
+  // Initial render
+  nextTick(() => initMermaid());
 
-    // on theme change, re-render mermaid charts
-    watch(
-      () => isDark.value,
-      () => {
-        nextTick(() => initMermaid());
-      },
-    );
+  // on theme change, re-render mermaid charts
+  watch(
+   () => isDark.value,
+   () => {
+    initMermaid();
+   }
+  );
 
-      // site change - re render
-    router.onAfterRouteChange = () => {
-      nextTick(() => mermaidRenderer?.renderMermaidDiagrams());
-    };
-
-    return h(DefaultTheme.Layout);
-  },
+  return h(DefaultTheme.Layout);
+ },
 } satisfies Theme;
 ```
 

@@ -1,10 +1,10 @@
 import { h, nextTick, watch } from "vue";
 import type { Theme } from "vitepress";
+import { useData } from "vitepress";
 import DefaultTheme from "vitepress/theme";
-import "./style.css";
 import { createMermaidRenderer } from "vitepress-mermaid-renderer";
 import "vitepress-mermaid-renderer/dist/style.css";
-import { useData } from "vitepress";
+import "./style.css";
 
 export default {
 	extends: DefaultTheme,
