@@ -4,9 +4,9 @@
     "": {
       "name": "vitepress-mermaid-renderer-test",
       "dependencies": {
-        "mermaid": "latest",
-        "vitepress": "latest",
-        "vitepress-mermaid-renderer": "latest",
+        "mermaid": "^11.12.1",
+        "vitepress": "^1.6.4",
+        "vitepress-mermaid-renderer": "^1.1.5",
       },
     },
   },
@@ -585,7 +585,7 @@
 
     "vitepress": ["vitepress@1.6.4", "", { "dependencies": { "@docsearch/css": "3.8.2", "@docsearch/js": "3.8.2", "@iconify-json/simple-icons": "^1.2.21", "@shikijs/core": "^2.1.0", "@shikijs/transformers": "^2.1.0", "@shikijs/types": "^2.1.0", "@types/markdown-it": "^14.1.2", "@vitejs/plugin-vue": "^5.2.1", "@vue/devtools-api": "^7.7.0", "@vue/shared": "^3.5.13", "@vueuse/core": "^12.4.0", "@vueuse/integrations": "^12.4.0", "focus-trap": "^7.6.4", "mark.js": "8.11.1", "minisearch": "^7.1.1", "shiki": "^2.1.0", "vite": "^5.4.14", "vue": "^3.5.13" }, "peerDependencies": { "markdown-it-mathjax3": "^4", "postcss": "^8" }, "optionalPeers": ["markdown-it-mathjax3", "postcss"], "bin": { "vitepress": "bin/vitepress.js" } }, "sha512-+2ym1/+0VVrbhNyRoFFesVvBvHAVMZMK0rw60E3X/5349M1GuVdKeazuksqopEdvkKwKGs21Q729jX81/bkBJg=="],
 
-    "vitepress-mermaid-renderer": ["vitepress-mermaid-renderer@1.0.20", "", { "peerDependencies": { "mermaid": "^11.0.0", "vue": "^3.0.0" } }, "sha512-0l3SYM1VPJ1bMXsQJV+ABehq0Ob3i+S+Lk2+3Op3Uz+HqJZNP/oMr3JgsRCfaghlZs0eOgr7FkDt5YZD8HoVeQ=="],
+    "vitepress-mermaid-renderer": ["vitepress-mermaid-renderer@1.1.5", "", { "peerDependencies": { "mermaid": "^11.0.0", "vue": "^3.0.0" } }, "sha512-TzuT55u8JAVlxy8xv60DzMgN4Mbv3qHCIgmn8K3NAb110hWuVtNLRzp1obOswgxrb6k9iW71XpAndBd4EABxOA=="],
 
     "vscode-jsonrpc": ["vscode-jsonrpc@8.2.0", "", {}, "sha512-C+r0eKJUIfiDIfwJhria30+TYWPtuHJXHtI7J0YlOmKAo7ogxP20T0zxB7HZQIFhIyvoBPwWskjxrvAtfjyZfA=="],
 

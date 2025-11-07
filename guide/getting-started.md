@@ -1,159 +1,199 @@
-# Getting Started
+# VitePress Mermaid Renderer 🎨
 
-## Prerequisites
+[![Live Demo](https://img.shields.io/badge/demo-live-brightgreen)](https://vitepress-mermaid-renderer.sametcc.me)
+![NPM Downloads](https://img.shields.io/npm/dw/vitepress-mermaid-renderer)
 
-- Node.js 18.0.0 or newer (aligned with VitePress 1.x support)
-- An existing VitePress project (`npm create vitepress@latest`)
-- No other Mermaid plugin running (remove older integrations to avoid duplicate renderers)
+Transform your static Mermaid diagrams into interactive, dynamic visualizations in VitePress! This powerful plugin brings life to your documentation by enabling interactive features like zooming, panning, and fullscreen viewing.
 
-## Installation
+Stay up to date with new releases in the [CHANGELOG](https://github.com/sametcn99/vitepress-mermaid-renderer/blob/main/CHANGELOG.md).
 
-Install the package using your preferred package manager:
+## ✨ Key Features
 
-::: code-group
+- 🔍 Smooth Zoom In/Out capabilities
+- 🔄 Intuitive Diagram Navigation with panning
+- 📋 One-Click Diagram Code Copy
+- 📏 Quick View Reset
+- 🖥️ Immersive Fullscreen Mode
+- 🎨 Seamless VitePress Theme Integration
+- ⚡ Lightning-fast Performance
+- 🛠️ Easy Configuration
 
-```bash [npm]
+## 🚀 Quick Start
+
+### Installation
+
+Choose your preferred package manager:
+
+```bash
+# Using bun
+bun add vitepress-mermaid-renderer
+
+# Using npm
 npm install vitepress-mermaid-renderer
-```
 
-```bash [yarn]
+# Using yarn
 yarn add vitepress-mermaid-renderer
-```
 
-```bash [pnpm]
+# Using pnpm
 pnpm add vitepress-mermaid-renderer
 ```
 
-```bash [bun]
-bun add vitepress-mermaid-renderer
-```
+### VitePress Configuration
 
-:::
-
-## Setup
-
-1. **Wire up the renderer in your theme entry.** Update `.vitepress/config.ts` (or `.vitepress/theme/index.ts`) to match the structure below:
+Your `.vitepress/theme/index.ts` file should look like this:
 
 ```typescript
-import { h, nextTick, watch } from "vue";
+import { h, nextTick, watchEffect, watch } from "vue";
 import type { Theme } from "vitepress";
-import { useData } from "vitepress";
 import DefaultTheme from "vitepress/theme";
+import { useData } from "vitepress";
 import { createMermaidRenderer } from "vitepress-mermaid-renderer";
-import "vitepress-mermaid-renderer/dist/style.css";
-import "./style.css";
 
 export default {
- extends: DefaultTheme,
- Layout: () => {
-  const { isDark } = useData();
+  extends: DefaultTheme,
+  Layout: () => {
+    const { isDark } = useData();
 
-  const initMermaid = () => {
-   nextTick(() =>
-    createMermaidRenderer({
-     theme: isDark.value ? "dark" : "forest",
-    }).initialize()
-   );
-  };
+    const initMermaid = () => {
+      const mermaidRenderer = createMermaidRenderer({
+        theme: isDark.value ? "dark" : "forest",
+      });
+    };
 
-  // Initial render
-  nextTick(() => initMermaid());
+    // initial mermaid setup
+    nextTick(() => initMermaid());
 
-  // on theme change, re-render mermaid charts
-  watch(
-   () => isDark.value,
-   () => {
-    initMermaid();
-   }
-  );
+    // on theme change, re-render mermaid charts
+    watch(
+      () => isDark.value,
+      () => {
+        initMermaid();
+      },
+    );
 
-  return h(DefaultTheme.Layout);
- },
+    return h(DefaultTheme.Layout);
+  },
 } satisfies Theme;
 ```
 
-2. **Understand the moving parts**
-   - `nextTick` ensures Mermaid runs after VitePress finishes rendering the current page.
-   - The `watch` on `isDark` re-renders diagrams when readers toggle light/dark mode.
-   - `createMermaidRenderer()` centralizes Mermaid configuration.
+## ⚙️ Configuration
 
-3. **Start the docs in development mode** so you can confirm the toolbar appears and theme switching works:
-
-```bash
-npm run docs:dev
-```
-
-## Client-side Only Rendering
-
-This plugin implements safeguards to prevent server-side rendering (SSR) issues:
-
-- The initialization checks for browser environment before executing
-- The rendering functions only operate in client-side context
-- A safe wrapper function `createMermaidRenderer()` provides a no-op implementation during SSR
-
-If you're encountering SSR-related errors, make sure you're using the `createMermaidRenderer()` function instead of directly using `MermaidRenderer.getInstance()`.
-
-## Basic Usage
-
-Create a code block with the language set to `mermaid`:
-
-\`\`\`mermaid
-flowchart TD
-A[Start] --> B{Is it?}
-B -->|Yes| C[OK]
-B -->|No| D[NOT OK]
-\`\`\`
-
-This will render an interactive diagram with zoom, pan, reset view and fullscreen controls.
-
-## Configuration
-
-You can customize the Mermaid settings by passing a configuration object when getting the instance:
+You can customize the Mermaid renderer by passing configuration options to `createMermaidRenderer()`:
 
 ```ts
 const mermaidRenderer = createMermaidRenderer({
   theme: "dark",
+  startOnLoad: false,
+  flowchart: {
+    useMaxWidth: true,
+    htmlLabels: true,
+  },
   sequence: {
     diagramMarginX: 50,
     diagramMarginY: 10,
   },
-  // ... other Mermaid configuration options
 });
 ```
 
-For available configuration options, refer to the [Mermaid documentation](https://mermaid.js.org/config/configuration.html).
+Use `setToolbar()` whenever you need to enable or disable specific controls for desktop, mobile, or fullscreen toolbars.
 
-### Theme-specific overrides
-
-Because the renderer re-initializes on theme changes, you can provide dynamic options:
+The optional toolbar configuration accepts `desktop`, `mobile`, and `fullscreen` objects. Each button can be set to `"enabled"` or `"disabled"`. Desktop and mobile controls default to `"enabled"`, while fullscreen controls default to `"disabled"` so you can opt in explicitly. You can also define a `positions` object inside each mode to anchor the toolbar to any corner without using a separate block, and `zoomLevel` to keep the zoom percentage visible even if the zoom buttons are disabled:
 
 ```ts
-const { isDark } = useData();
-
-createMermaidRenderer({
-  theme: isDark.value ? "dark" : "forest",
+mermaidRenderer.setToolbar({
+  showLanguageLabel: true,
+  desktop: {
+    zoomIn: "disabled",
+    zoomLevel: "enabled",
+    positions: { vertical: "top", horizontal: "left" },
+  },
+  mobile: {
+    zoomLevel: "disabled",
+    positions: { vertical: "bottom", horizontal: "left" },
+  },
+  fullscreen: {
+    zoomLevel: "enabled",
+    positions: { vertical: "top", horizontal: "right" },
+  },
 });
 ```
 
-All calls merge with the default Mermaid config, so you only need to specify the keys you want to change.
+If you omit `positions`, every mode defaults to the bottom-right corner. `zoomLevel` defaults to `"enabled"` across all modes.
 
-## How This Plugin Differs from `vitepress-plugin-mermaid`
+Need to hide the little `mermaid` label that VitePress renders in the top-right corner of the original code block? Set `showLanguageLabel: false` in `setToolbar()` (or the `<MermaidDiagram toolbar>` prop) and the renderer will strip it out when it swaps the code fence with the interactive diagram.
 
-When evaluating Mermaid integrations for VitePress, you might come across the [`vitepress-plugin-mermaid`](https://emersonbottero.github.io/vitepress-plugin-mermaid/guide/getting-started.html) package. Both plugins enable Mermaid diagrams, but they target different needs:
+### Toolbar option reference
 
-- **Theme awareness:** This renderer reacts to VitePress theme changes out of the box. The alternative plugin renders diagrams with a fixed theme, so dark/light mode switches do not re-style existing diagrams without manual intervention.
-- **Interactive controls:** Fullscreen mode, zoom in/out, pan, and reset view controls are bundled here. The comparison plugin renders static SVGs with no built-in viewport controls, which limits usability for large diagrams.
-- **Mermaid configuration surface:** `createMermaidRenderer()` accepts the full Mermaid configuration object, letting you tweak themes, sequence diagram margins, font settings, or custom directives in one place. The other plugin exposes only a small subset of Mermaid options, so advanced chart tuning often requires custom scripting.
+| Key                                 | Type                   | Default                  | Description                                                                                                                               |
+| ----------------------------------- | ---------------------- | ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `showLanguageLabel`                 | `boolean`              | `true`                   | Toggles the original VitePress `mermaid` badge that normally appears on fenced code blocks.                                               |
+| `desktop` / `mobile` / `fullscreen` | `ToolbarModeOverrides` | `DEFAULT_TOOLBAR_CONFIG` | Mode-specific overrides for buttons, zoom text, and toolbar placement. Each mode is optional—omit it to inherit the defaults shown below. |
 
-### Installation and setup trade-offs
+| Mode field             | Modes                       | Type                      | Default (desktop / mobile / fullscreen) | Notes                                                                                |
+| ---------------------- | --------------------------- | ------------------------- | --------------------------------------- | ------------------------------------------------------------------------------------ |
+| `zoomIn`               | Desktop, Mobile, Fullscreen | `"enabled" \| "disabled"` | `enabled / disabled / disabled`         | Mobile defaults to disabled but can be enabled when you need on-the-go zooming.      |
+| `zoomOut`              | Desktop, Mobile, Fullscreen | `"enabled" \| "disabled"` | `enabled / disabled / disabled`         | Mobile defaults to disabled but can be enabled when you need on-the-go zooming.      |
+| `resetView`            | Desktop, Mobile, Fullscreen | `"enabled" \| "disabled"` | `enabled / enabled / disabled`          | Resets zoom + pan to the initial state.                                              |
+| `copyCode`             | Desktop, Mobile, Fullscreen | `"enabled" \| "disabled"` | `enabled / enabled / disabled`          | Copies the raw Mermaid source to the clipboard.                                      |
+| `toggleFullscreen`     | Desktop, Mobile, Fullscreen | `"enabled" \| "disabled"` | `enabled / enabled / enabled`           | Expands the diagram container to fullscreen.                                         |
+| `zoomLevel`            | Desktop, Mobile, Fullscreen | `"enabled" \| "disabled"` | `enabled / enabled / enabled`           | Controls the visibility of the percentage indicator even if zoom buttons are hidden. |
+| `positions.vertical`   | Desktop, Mobile, Fullscreen | `"top" \| "bottom"`       | `bottom / bottom / bottom`              | Anchors the toolbar to the top or bottom edge inside the diagram container.          |
+| `positions.horizontal` | Desktop, Mobile, Fullscreen | `"left" \| "right"`       | `right / right / right`                 | Anchors the toolbar to the left or right edge inside the diagram container.          |
 
-- **`vitepress-plugin-mermaid`:** Installation is minimal—install the dependency and reference it in `config.ts`. If you only need basic Mermaid support under a single theme, this simplicity might be enough.
-- **`vitepress-mermaid-renderer`:** Setup adds a few lines to hook into the VitePress layout and watch the current theme, but those extra steps unlock responsive theming, client-only safeguards, and richer interactive features. If you rely on presentation polish, dark/light parity, or fine-grained Mermaid config, the additional wiring pays off quickly.
+For a complete list of available configuration options, refer to the [Mermaid Configuration Documentation](https://mermaid.js.org/config/schema-docs/config.html).
 
-## Feature highlights
+## 🔧 How It Works
 
-- Toolbar with fullscreen, zoom, pan, and reset controls for every diagram
-- Automatic dark/light theme sync using VitePress' built-in theme context
-- Global Mermaid configuration plus per-page overrides through standard config objects
-- Lazy, client-only rendering to keep SSR builds clean and fast
-- Type-safe API (TypeScript definitions included) for confident customization
+Your Mermaid diagrams spring to life automatically! The plugin detects Mermaid code blocks (marked with `mermaid` language) and transforms them into interactive diagrams with a powerful toolset:
+
+- 🔍 Dynamic zoom controls
+- 🖱️ Smooth pan navigation
+- 🎯 One-click view reset
+- 📺 Immersive fullscreen experience
+- 📝 Easy code copying
+
+## 🤝 Contributing
+
+We welcome contributions! Whether it's submitting pull requests, reporting issues, or suggesting improvements, your input helps make this plugin better for everyone.
+
+## 🧪 Local Development
+
+Want to test the package locally? Here are two methods:
+
+### Automated test.ts script
+
+Run the `test.ts` helper to walk through the full local-preview flow in one step. The script (powered by Bun) cleans previous build artifacts, rebuilds the package, creates a `.tgz` archive, installs that archive into `test-project`, and finally launches the VitePress docs dev server.
+
+```bash
+bun test.ts
+```
+
+> Press `Ctrl+C` to stop the dev server when you are finished. The script requires Bun to execute, but will fall back to npm for package management if Bun is not installed globally.
+
+### Method 1: npm link
+
+```bash
+# In the package directory
+npm run build
+npm link
+
+# In your test project
+npm link vitepress-mermaid-renderer
+```
+
+### Method 2: npm pack
+
+```bash
+# In the package directory
+npm run build
+npm pack
+
+# In your test project
+npm install /path/to/vitepress-mermaid-renderer-1.0.0.tgz
+```
+
+## 📦 Links
+
+- [NPM Package](https://www.npmjs.com/package/vitepress-mermaid-renderer)
+- [GitHub Repository](https://github.com/sametcn99/vitepress-mermaid-renderer)
+- [Documentation](https://vitepress-mermaid-renderer.sametcc.me)
